@@ -236,7 +236,7 @@ export default function EmployeeSetupPage() {
                 </p>
               )}
 
-              {styleProfile && (
+              {styleProfile && styleProfile.quantitative && styleProfile.qualitative && (
                 <div className="mt-4 space-y-6">
                   {/* Quantitative Profile */}
                   <div>
@@ -244,41 +244,45 @@ export default function EmployeeSetupPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="bg-gray-50 p-3 rounded-lg">
                         <p className="text-sm text-gray-500">Wörter/Post</p>
-                        <p className="text-xl font-semibold">{styleProfile.quantitative.avgWordsPerPost}</p>
+                        <p className="text-xl font-semibold">{styleProfile.quantitative.avgWordsPerPost ?? '-'}</p>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-lg">
                         <p className="text-sm text-gray-500">Wörter/Satz</p>
-                        <p className="text-xl font-semibold">{styleProfile.quantitative.avgWordsPerSentence}</p>
+                        <p className="text-xl font-semibold">{styleProfile.quantitative.avgWordsPerSentence ?? '-'}</p>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-lg">
                         <p className="text-sm text-gray-500">Emojis/Post</p>
-                        <p className="text-xl font-semibold">{styleProfile.quantitative.avgEmojisPerPost}</p>
+                        <p className="text-xl font-semibold">{styleProfile.quantitative.avgEmojisPerPost ?? '-'}</p>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-lg">
                         <p className="text-sm text-gray-500">Absätze/Post</p>
-                        <p className="text-xl font-semibold">{styleProfile.quantitative.avgParagraphBreaksPerPost}</p>
+                        <p className="text-xl font-semibold">{styleProfile.quantitative.avgParagraphBreaksPerPost ?? '-'}</p>
                       </div>
                     </div>
 
-                    <div className="mt-4">
-                      <p className="text-sm text-gray-500 mb-2">Top Emojis</p>
-                      <div className="flex gap-2">
-                        {styleProfile.quantitative.topEmojis.map((emoji, i) => (
-                          <span key={i} className="text-2xl">{emoji}</span>
-                        ))}
+                    {styleProfile.quantitative.topEmojis && styleProfile.quantitative.topEmojis.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-sm text-gray-500 mb-2">Top Emojis</p>
+                        <div className="flex gap-2">
+                          {styleProfile.quantitative.topEmojis.map((emoji, i) => (
+                            <span key={i} className="text-2xl">{emoji}</span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
-                    <div className="mt-4">
-                      <p className="text-sm text-gray-500 mb-2">Häufige Wörter</p>
-                      <div className="flex flex-wrap gap-2">
-                        {styleProfile.quantitative.topWords.map((word, i) => (
-                          <span key={i} className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">
-                            {word}
-                          </span>
-                        ))}
+                    {styleProfile.quantitative.topWords && styleProfile.quantitative.topWords.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-sm text-gray-500 mb-2">Häufige Wörter</p>
+                        <div className="flex flex-wrap gap-2">
+                          {styleProfile.quantitative.topWords.map((word, i) => (
+                            <span key={i} className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">
+                              {word}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   {/* Qualitative Profile */}
@@ -287,19 +291,19 @@ export default function EmployeeSetupPage() {
                     <div className="space-y-3">
                       <div>
                         <p className="text-sm font-medium text-gray-700">Tonalität</p>
-                        <p className="text-gray-600">{styleProfile.qualitative.tonality}</p>
+                        <p className="text-gray-600">{styleProfile.qualitative.tonality || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-700">Rhythmus & Struktur</p>
-                        <p className="text-gray-600">{styleProfile.qualitative.rhythm}</p>
+                        <p className="text-gray-600">{styleProfile.qualitative.rhythm || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-700">Kommunikationsstil</p>
-                        <p className="text-gray-600">{styleProfile.qualitative.communicationStyle}</p>
+                        <p className="text-gray-600">{styleProfile.qualitative.communicationStyle || '-'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-700">Beliefs & Werte</p>
-                        <p className="text-gray-600">{styleProfile.qualitative.beliefs}</p>
+                        <p className="text-gray-600">{styleProfile.qualitative.beliefs || '-'}</p>
                       </div>
                     </div>
                   </div>
