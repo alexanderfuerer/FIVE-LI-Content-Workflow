@@ -72,9 +72,12 @@ export function useStyleProfiles(employeeIds: string[]) {
   const [profiles, setProfiles] = useState<Map<string, StyleProfile | null>>(new Map())
   const [isLoading, setIsLoading] = useState(false)
 
+  // Create a stable string key from the array
+  const employeeIdsKey = employeeIds?.join(',') ?? ''
+
   useEffect(() => {
     const fetchProfiles = async () => {
-      if (employeeIds.length === 0) {
+      if (!employeeIds || employeeIds.length === 0) {
         setProfiles(new Map())
         return
       }
@@ -98,7 +101,7 @@ export function useStyleProfiles(employeeIds: string[]) {
     }
 
     fetchProfiles()
-  }, [employeeIds.join(',')])
+  }, [employeeIdsKey])
 
   const hasProfile = (employeeId: string): boolean => {
     return profiles.get(employeeId) !== null && profiles.get(employeeId) !== undefined

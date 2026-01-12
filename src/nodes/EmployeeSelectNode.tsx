@@ -29,7 +29,7 @@ function EmployeeSelectNode({ data }: EmployeeSelectNodeProps) {
       </div>
 
       <Select
-        options={data.employees.map((e: Employee) => ({ value: e.id, label: e.name }))}
+        options={data.employees.map((e: Employee) => ({ value: e.id, label: e.name || 'Unbekannt' }))}
         value={data.selectedEmployeeId || ''}
         onChange={(e) => data.onEmployeeSelect(e.target.value)}
         placeholder="Mitarbeiter wählen..."
@@ -39,14 +39,14 @@ function EmployeeSelectNode({ data }: EmployeeSelectNodeProps) {
       {selectedEmployee && (
         <div className="mt-3 p-3 bg-gray-50 rounded-lg">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">{selectedEmployee.name}</span>
+            <span className="text-sm font-medium text-gray-700">{selectedEmployee.name || 'Unbekannt'}</span>
             <Badge status={data.styleProfile ? 'hasProfile' : 'noProfile'} />
           </div>
-          {data.styleProfile && (
+          {data.styleProfile && data.styleProfile.quantitative && data.styleProfile.qualitative && (
             <div className="text-xs text-gray-500 space-y-1">
-              <p>Wörter/Post: ~{data.styleProfile.quantitative.avgWordsPerPost}</p>
-              <p>Emojis: {data.styleProfile.quantitative.topEmojis.slice(0, 3).join(' ')}</p>
-              <p className="truncate">Stil: {data.styleProfile.qualitative.tonality}</p>
+              <p>Wörter/Post: ~{data.styleProfile.quantitative.avgWordsPerPost ?? '-'}</p>
+              <p>Emojis: {(data.styleProfile.quantitative.topEmojis || []).slice(0, 3).join(' ') || '-'}</p>
+              <p className="truncate">Stil: {data.styleProfile.qualitative.tonality || '-'}</p>
             </div>
           )}
           {!data.styleProfile && (

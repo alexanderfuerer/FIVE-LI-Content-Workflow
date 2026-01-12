@@ -7,6 +7,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
+  const pathname = location?.pathname || ''
 
   const navItems = [
     { path: '/', label: 'Workflow', icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z' },
@@ -14,7 +15,7 @@ export default function Layout({ children }: LayoutProps) {
   ]
 
   // Don't show navigation on full-screen workflow page
-  if (location.pathname === '/') {
+  if (pathname === '/') {
     return (
       <div className="min-h-screen">
         <nav className="fixed top-0 right-0 z-50 p-4">
@@ -51,8 +52,8 @@ export default function Layout({ children }: LayoutProps) {
 
         <div className="px-3">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path ||
-              (item.path !== '/' && location.pathname.startsWith(item.path))
+            const isActive = pathname === item.path ||
+              (item.path !== '/' && pathname.startsWith(item.path))
 
             return (
               <Link
