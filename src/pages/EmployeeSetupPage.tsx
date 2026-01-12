@@ -31,11 +31,11 @@ export default function EmployeeSetupPage() {
   useEffect(() => {
     if (employee) {
       setFormData({
-        name: employee.name,
-        email: employee.email,
-        linkedinProfile: employee.linkedinProfile,
-        googleDriveFolderId: employee.googleDriveFolderId,
-        toneDescription: employee.toneDescription,
+        name: employee.name || '',
+        email: employee.email || '',
+        linkedinProfile: employee.linkedinProfile || '',
+        googleDriveFolderId: employee.googleDriveFolderId || '',
+        toneDescription: employee.toneDescription || '',
       })
     }
   }, [employee])

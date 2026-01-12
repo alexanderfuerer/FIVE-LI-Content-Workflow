@@ -71,12 +71,12 @@ export default function EmployeesPage() {
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                     <span className="text-blue-600 font-semibold text-lg">
-                      {employee.name.charAt(0).toUpperCase()}
+                      {(employee.name || '?').charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{employee.name}</h3>
-                    <p className="text-sm text-gray-500">{employee.email}</p>
+                    <h3 className="font-semibold text-gray-900">{employee.name || 'Unbekannt'}</h3>
+                    <p className="text-sm text-gray-500">{employee.email || '-'}</p>
                   </div>
                   <div className="ml-4">
                     {!profilesLoading && (
