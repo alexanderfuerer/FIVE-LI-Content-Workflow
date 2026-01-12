@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/* Custom properties for the app */
+:root {
+  --node-editor-bg: #1a1a2e;
+  --node-bg: #ffffff;
+  --node-border: #e5e7eb;
+}
+
+/* Base styles */
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* React Flow customizations */
+.react-flow__node {
+  border-radius: 8px;
+  border: 1px solid var(--node-border);
+  background: var(--node-bg);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.react-flow__handle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.react-flow__handle-left {
+  left: -6px;
+}
+
+.react-flow__handle-right {
+  right: -6px;
+}
+
+/* Status badges */
+.badge-draft {
+  @apply bg-gray-100 text-gray-700;
+}
+
+.badge-generating {
+  @apply bg-blue-100 text-blue-700;
+}
+
+.badge-review {
+  @apply bg-yellow-100 text-yellow-700;
+}
+
+.badge-approved {
+  @apply bg-green-100 text-green-700;
+}
+
+.badge-notified {
+  @apply bg-purple-100 text-purple-700;
+}
