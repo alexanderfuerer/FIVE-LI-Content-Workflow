@@ -72,21 +72,22 @@ export function useStyleProfiles(employeeIds: string[]) {
   const [profiles, setProfiles] = useState<Map<string, StyleProfile | null>>(new Map())
   const [isLoading, setIsLoading] = useState(false)
 
-  // Create a stable string key from the array
+  // Create a stable string key from the array for dependency comparison
   const employeeIdsKey = employeeIds?.join(',') ?? ''
 
   useEffect(() => {
     const fetchProfiles = async () => {
-      if (!employeeIds || employeeIds.length === 0) {
+      if (employeeIdsKey === '') {
         setProfiles(new Map())
         return
       }
 
       setIsLoading(true)
       const profileMap = new Map<string, StyleProfile | null>()
+      const ids = employeeIdsKey.split(',')
 
       await Promise.all(
-        employeeIds.map(async (id) => {
+        ids.map(async (id) => {
           try {
             const profile = await getStyleProfileByEmployee(id)
             profileMap.set(id, profile)

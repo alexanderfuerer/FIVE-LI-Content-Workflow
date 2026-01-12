@@ -127,14 +127,16 @@ export default function WorkflowPage() {
   const { styleProfile } = useStyleProfile(workflow.state.selectedEmployeeId)
 
   // Set selected employee with style profile
+  const { setSelectedEmployee } = workflow
+  const selectedEmployeeId = workflow.state.selectedEmployeeId
   useEffect(() => {
-    if (workflow.state.selectedEmployeeId && styleProfile) {
-      const employee = employees.find((e) => e.id === workflow.state.selectedEmployeeId)
+    if (selectedEmployeeId && styleProfile) {
+      const employee = employees.find((e) => e.id === selectedEmployeeId)
       if (employee) {
-        workflow.setSelectedEmployee(employee, styleProfile)
+        setSelectedEmployee(employee, styleProfile)
       }
     }
-  }, [styleProfile, workflow.state.selectedEmployeeId, employees])
+  }, [styleProfile, selectedEmployeeId, employees, setSelectedEmployee])
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -226,23 +228,7 @@ export default function WorkflowPage() {
           return node
       }
     })
-  }, [
-    nodes,
-    employees,
-    workflow.state,
-    workflow.isGenerating,
-    workflow.isCreatingDoc,
-    workflow.isSending,
-    workflow.error,
-    workflow.setInputContent,
-    workflow.setSelectedEmployee,
-    workflow.setEditedPost,
-    workflow.generate,
-    workflow.saveProgress,
-    workflow.approve,
-    workflow.sendNotification,
-    workflow.getPostStats,
-  ])
+  }, [nodes, employees, workflow])
 
   return (
     <div className="h-screen w-full flex flex-col">
