@@ -57,9 +57,14 @@ export async function createEmployee(
   let sampleTextsUrl = ''
 
   if (sampleTextsFile) {
-    const storageRef = ref(storage, `sample-texts/${Date.now()}-${sampleTextsFile.name}`)
-    await uploadBytes(storageRef, sampleTextsFile)
-    sampleTextsUrl = await getDownloadURL(storageRef)
+    try {
+      const storageRef = ref(storage, `sample-texts/${Date.now()}-${sampleTextsFile.name}`)
+      await uploadBytes(storageRef, sampleTextsFile)
+      sampleTextsUrl = await getDownloadURL(storageRef)
+    } catch (storageError) {
+      console.error('Storage upload error:', storageError)
+      // Continue without file upload - user can add it later
+    }
   }
 
   const docRef = await addDoc(collection(db, EMPLOYEES_COLLECTION), {
@@ -84,9 +89,14 @@ export async function updateEmployee(
   }
 
   if (sampleTextsFile) {
-    const storageRef = ref(storage, `sample-texts/${Date.now()}-${sampleTextsFile.name}`)
-    await uploadBytes(storageRef, sampleTextsFile)
-    updateData.sampleTextsUrl = await getDownloadURL(storageRef)
+    try {
+      const storageRef = ref(storage, `sample-texts/${Date.now()}-${sampleTextsFile.name}`)
+      await uploadBytes(storageRef, sampleTextsFile)
+      updateData.sampleTextsUrl = await getDownloadURL(storageRef)
+    } catch (storageError) {
+      console.error('Storage upload error:', storageError)
+      // Continue without file upload
+    }
   }
 
   await updateDoc(docRef, updateData)
