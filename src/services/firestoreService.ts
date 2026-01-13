@@ -32,49 +32,75 @@ const WORKFLOWS_COLLECTION = 'workflows'
 // ==================== EMPLOYEES ====================
 
 export async function getEmployees(): Promise<Employee[]> {
-  const querySnapshot = await getDocs(
-    query(collection(db, EMPLOYEES_COLLECTION), orderBy('createdAt', 'desc'))
-  )
-  return querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Employee[]
+  try {
+    console.log('getEmployees: Starting query...')
+    const q = query(collection(db, EMPLOYEES_COLLECTION), orderBy('createdAt', 'desc'))
+    console.log('getEmployees: Query created, executing...')
+    const querySnapshot = await getDocs(q)
+    console.log('getEmployees: Got', querySnapshot.docs.length, 'documents')
+    const employees = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Employee[]
+    console.log('getEmployees: Success')
+    return employees
+  } catch (err) {
+    console.error('getEmployees ERROR:', err)
+    throw err
+  }
 }
 
 export async function getEmployee(id: string): Promise<Employee | null> {
-  const docRef = doc(db, EMPLOYEES_COLLECTION, id)
-  const docSnap = await getDoc(docRef)
-  if (docSnap.exists()) {
-    return { id: docSnap.id, ...docSnap.data() } as Employee
+  try {
+    console.log('getEmployee: Fetching', id)
+    const docRef = doc(db, EMPLOYEES_COLLECTION, id)
+    const docSnap = await getDoc(docRef)
+    if (docSnap.exists()) {
+      console.log('getEmployee: Found')
+      return { id: docSnap.id, ...docSnap.data() } as Employee
+    }
+    console.log('getEmployee: Not found')
+    return null
+  } catch (err) {
+    console.error('getEmployee ERROR:', err)
+    throw err
   }
-  return null
 }
 
 export async function createEmployee(
   data: EmployeeFormData,
   sampleTextsFile?: File
 ): Promise<string> {
+  console.log('createEmployee: Starting...', { data, hasFile: !!sampleTextsFile })
   let sampleTextsUrl = ''
 
   if (sampleTextsFile) {
     try {
+      console.log('createEmployee: Uploading file...')
       const storageRef = ref(storage, `sample-texts/${Date.now()}-${sampleTextsFile.name}`)
       await uploadBytes(storageRef, sampleTextsFile)
       sampleTextsUrl = await getDownloadURL(storageRef)
+      console.log('createEmployee: File uploaded')
     } catch (storageError) {
-      console.error('Storage upload error:', storageError)
+      console.error('createEmployee: Storage upload error:', storageError)
       // Continue without file upload - user can add it later
     }
   }
 
-  const docRef = await addDoc(collection(db, EMPLOYEES_COLLECTION), {
-    ...data,
-    sampleTextsUrl,
-    createdAt: Timestamp.now(),
-    updatedAt: Timestamp.now(),
-  })
-
-  return docRef.id
+  try {
+    console.log('createEmployee: Adding document to Firestore...')
+    const docRef = await addDoc(collection(db, EMPLOYEES_COLLECTION), {
+      ...data,
+      sampleTextsUrl,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    })
+    console.log('createEmployee: Success, id:', docRef.id)
+    return docRef.id
+  } catch (err) {
+    console.error('createEmployee: Firestore error:', err)
+    throw err
+  }
 }
 
 export async function updateEmployee(
@@ -145,16 +171,24 @@ export async function getStyleProfile(id: string): Promise<StyleProfile | null> 
 }
 
 export async function getStyleProfileByEmployee(employeeId: string): Promise<StyleProfile | null> {
-  const q = query(
-    collection(db, STYLE_PROFILES_COLLECTION),
-    where('employeeId', '==', employeeId)
-  )
-  const querySnapshot = await getDocs(q)
-  if (!querySnapshot.empty) {
-    const doc = querySnapshot.docs[0]
-    return { id: doc.id, ...doc.data() } as StyleProfile
+  try {
+    console.log('getStyleProfileByEmployee: Querying for', employeeId)
+    const q = query(
+      collection(db, STYLE_PROFILES_COLLECTION),
+      where('employeeId', '==', employeeId)
+    )
+    const querySnapshot = await getDocs(q)
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0]
+      console.log('getStyleProfileByEmployee: Found profile')
+      return { id: doc.id, ...doc.data() } as StyleProfile
+    }
+    console.log('getStyleProfileByEmployee: No profile found')
+    return null
+  } catch (err) {
+    console.error('getStyleProfileByEmployee ERROR:', err)
+    throw err
   }
-  return null
 }
 
 export async function saveStyleProfile(
