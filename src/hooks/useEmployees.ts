@@ -31,14 +31,28 @@ export function useEmployees() {
   }, [fetchEmployees])
 
   const addEmployee = async (data: EmployeeFormData, sampleTextsFile?: File) => {
-    const id = await createEmployee(data, sampleTextsFile)
-    await fetchEmployees()
-    return id
+    try {
+      console.log('addEmployee called with:', { data, hasFile: !!sampleTextsFile })
+      const id = await createEmployee(data, sampleTextsFile)
+      console.log('addEmployee success, id:', id)
+      await fetchEmployees()
+      return id
+    } catch (err) {
+      console.error('addEmployee error:', err)
+      throw err
+    }
   }
 
   const editEmployee = async (id: string, data: Partial<EmployeeFormData>, sampleTextsFile?: File) => {
-    await updateEmployee(id, data, sampleTextsFile)
-    await fetchEmployees()
+    try {
+      console.log('editEmployee called with:', { id, data, hasFile: !!sampleTextsFile })
+      await updateEmployee(id, data, sampleTextsFile)
+      console.log('editEmployee success')
+      await fetchEmployees()
+    } catch (err) {
+      console.error('editEmployee error:', err)
+      throw err
+    }
   }
 
   const removeEmployee = async (id: string) => {

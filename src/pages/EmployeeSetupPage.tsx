@@ -9,11 +9,14 @@ export default function EmployeeSetupPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const isNewEmployee = id === 'new'
-  const { employee, isLoading: employeeLoading } = useEmployee(isNewEmployee ? null : id!)
+  const employeeId = isNewEmployee ? null : (id || null)
+  const { employee, isLoading: employeeLoading, error: employeeError } = useEmployee(employeeId)
   const { addEmployee, editEmployee } = useEmployees()
-  const { styleProfile, isAnalyzing, runAnalysis, refresh } = useStyleProfile(
-    isNewEmployee ? null : id!
-  )
+  const { styleProfile, isAnalyzing, runAnalysis, refresh, error: styleError } = useStyleProfile(employeeId)
+
+  // Log any hook errors
+  if (employeeError) console.error('Employee hook error:', employeeError)
+  if (styleError) console.error('Style profile hook error:', styleError)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [formData, setFormData] = useState<EmployeeFormData>({
