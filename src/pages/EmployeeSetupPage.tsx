@@ -8,8 +8,10 @@ import type { EmployeeFormData } from '../types'
 export default function EmployeeSetupPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const isNewEmployee = id === 'new'
-  const employeeId = isNewEmployee ? null : (id || null)
+  // Route /employees/new doesn't have :id param, so id is undefined
+  // Route /employees/:id captures the path segment
+  const isNewEmployee = !id || id === 'new'
+  const employeeId = isNewEmployee ? null : id
   const { employee, isLoading: employeeLoading, error: employeeError } = useEmployee(employeeId)
   const { addEmployee, editEmployee } = useEmployees()
   const { styleProfile, isAnalyzing, runAnalysis, refresh, error: styleError } = useStyleProfile(employeeId)

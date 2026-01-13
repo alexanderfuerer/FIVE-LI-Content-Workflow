@@ -4,10 +4,30 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>temp-vite</title>
+    <title>FIVE-LI Content Workflow</title>
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Early error handler - runs before any modules load
+      window.__EARLY_ERRORS__ = [];
+      window.onerror = function(message, source, lineno, colno, error) {
+        console.log('=== EARLY ERROR ===');
+        console.log('Message:', message);
+        console.log('Source:', source);
+        console.log('Line:', lineno, 'Column:', colno);
+        console.log('Error:', error);
+        console.log('Stack:', error && error.stack);
+        window.__EARLY_ERRORS__.push({message, source, lineno, colno, error});
+      };
+      window.onunhandledrejection = function(event) {
+        console.log('=== EARLY PROMISE REJECTION ===');
+        console.log('Reason:', event.reason);
+        console.log('Stack:', event.reason && event.reason.stack);
+        window.__EARLY_ERRORS__.push({type: 'unhandledrejection', reason: event.reason});
+      };
+      console.log('Early error handler installed');
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
