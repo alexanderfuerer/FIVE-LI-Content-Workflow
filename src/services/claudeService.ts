@@ -2,10 +2,22 @@ import Anthropic from '@anthropic-ai/sdk'
 import type { Employee, StyleProfile, QuantitativeProfile, QualitativeProfile } from '../types'
 import { saveStyleProfile } from './firestoreService'
 
-const anthropic = new Anthropic({
-  apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY,
-  dangerouslyAllowBrowser: true,
-})
+// Lazy initialization - only create client when needed
+let anthropicClient: Anthropic | null = null
+
+function getAnthropicClient(): Anthropic {
+  if (!anthropicClient) {
+    const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
+    if (!apiKey) {
+      throw new Error('VITE_ANTHROPIC_API_KEY ist nicht konfiguriert. Bitte in .env Datei setzen.')
+    }
+    anthropicClient = new Anthropic({
+      apiKey,
+      dangerouslyAllowBrowser: true,
+    })
+  }
+  return anthropicClient
+}
 
 const STYLE_ANALYSIS_SYSTEM_PROMPT = `Du bist ein hochspezialisierter Textanalyst nach dem PPP-System (Prime, Prompt, Polish) mit Mustererkennung.
 
@@ -81,6 +93,7 @@ export async function analyzeStyle(
   sampleTexts: string,
   employeeId: string
 ): Promise<StyleProfile> {
+  const anthropic = getAnthropicClient()
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 4096,
@@ -176,6 +189,7 @@ export async function generatePost(
   employee: Employee,
   styleProfile: StyleProfile
 ): Promise<string> {
+  const anthropic = getAnthropicClient()
   const systemPrompt = buildGenerationSystemPrompt(employee, styleProfile)
 
   const message = await anthropic.messages.create({
