@@ -1,16 +1,20 @@
-import Anthropic from '@anthropic-ai/sdk'
+// Dynamic import to avoid CSP issues - Anthropic SDK only loaded when needed
 import type { Employee, StyleProfile, QuantitativeProfile, QualitativeProfile } from '../types'
 import { saveStyleProfile } from './firestoreService'
 
-// Lazy initialization - only create client when needed
-let anthropicClient: Anthropic | null = null
+// Types for dynamic import
+type AnthropicClient = InstanceType<typeof import('@anthropic-ai/sdk').default>
 
-function getAnthropicClient(): Anthropic {
+let anthropicClient: AnthropicClient | null = null
+
+async function getAnthropicClient(): Promise<AnthropicClient> {
   if (!anthropicClient) {
     const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
     if (!apiKey) {
       throw new Error('VITE_ANTHROPIC_API_KEY ist nicht konfiguriert. Bitte in .env Datei setzen.')
     }
+    // Dynamic import - only loads SDK when actually needed
+    const Anthropic = (await import('@anthropic-ai/sdk')).default
     anthropicClient = new Anthropic({
       apiKey,
       dangerouslyAllowBrowser: true,
@@ -93,7 +97,7 @@ export async function analyzeStyle(
   sampleTexts: string,
   employeeId: string
 ): Promise<StyleProfile> {
-  const anthropic = getAnthropicClient()
+  const anthropic = await getAnthropicClient()
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 4096,
@@ -163,8 +167,8 @@ ${employee.toneDescription}
 - ${quantitative.sentenceLengthDistribution.over25Words}% lange Sätze (26+ Wörter)
 
 ## Bevorzugte Elemente (VERWENDEN)
-- Diese Emojis nutzen: ${quantitative.topEmojis.join(', ')}
-- Diese Wörter/Phrasen einbauen: ${quantitative.topWords.join(', ')}
+- Diese Emojis nutzen: ${(quantitative.topEmojis || []).join(', ')}
+- Diese Wörter/Phrasen einbauen: ${(quantitative.topWords || []).join(', ')}
 
 ## Qualitative Vorgaben (STIL IMITIEREN)
 - Tonalität: ${qualitative.tonality}
@@ -189,7 +193,7 @@ export async function generatePost(
   employee: Employee,
   styleProfile: StyleProfile
 ): Promise<string> {
-  const anthropic = getAnthropicClient()
+  const anthropic = await getAnthropicClient()
   const systemPrompt = buildGenerationSystemPrompt(employee, styleProfile)
 
   const message = await anthropic.messages.create({
@@ -220,6 +224,9 @@ export function calculatePostStats(content: string): {
   paragraphCount: number
   sentenceCount: number
 } {
+  if (!content) {
+    return { wordCount: 0, emojiCount: 0, paragraphCount: 0, sentenceCount: 0 }
+  }
   const words = content.split(/\s+/).filter((w) => w.length > 0)
   const emojiRegex = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu
   const emojis = content.match(emojiRegex) || []
